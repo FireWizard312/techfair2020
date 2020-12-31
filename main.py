@@ -258,7 +258,6 @@ def process_output(idx_, history):
 
     return history[-1], history
 
-
 WINDOW_NAME = 'Video Gesture Recognition'
 def main():
     print("Open camera...")
@@ -300,9 +299,9 @@ def main():
     history = [2]
     history_logit = []
     history_timing = []
-
-    i_frame = -1
     lastidx = 2
+    i_frame = -1
+    headers = spotifycontrol.getaheader
     print("Ready!")
     while True:
         i_frame += 1
@@ -337,25 +336,34 @@ def main():
                 idx_ = np.argmax(avg_logit, axis=1)[0]
 
             idx, history = process_output(idx_, history)
-
+            
             t2 = time.time()
 #            print(f"{index} {categories[idx]}")
  #           print(categories[idx])
+            if t2 % 3600 == 0:
+                headers = spotifycontrol.getaheader()
             if idx == lastidx:
-                endt = time.time()
                 lastidx = idx
             elif idx == 14:
                 spotifycontrol.pausemusic()
+                lastidx = idx
             elif idx == 20:
                 spotifycontrol.playmusic()
+                lastidx = idx
             elif idx == 10:
                 spotifycontrol.volumedown()
+                lastidx = idx
             elif idx == 13:
                 spotifycontrol.volumeup()
+                lastidx = idx
             elif idx == 11:
                 spotifycontrol.previous()
+                lastidx = idx
             elif idx == 12:
                 spotifycontrol.nextsong()
+                lastidx = idx
+            else:
+                lastidx = idx
             current_time = t2 - t1
 
         img = cv2.resize(img, (640, 480))
@@ -402,3 +410,4 @@ def main():
 
 
 main()
+

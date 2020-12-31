@@ -17,32 +17,28 @@ def getaheader():
     headers = {'Accept': 'application/json', 'Content-Type':'application/json', 'Authorization': 'Bearer ' + accesstoken}
     return headers
 
+headers = getaheader()
 def volumeup():
-    headers = getaheader()
     info = requests.get('https://api.spotify.com/v1/me/player', headers=headers)
     infostr = json.loads(info.content)
     volmeper = int(infostr['device']['volume_percent'])
     volup = requests.put('https://api.spotify.com/v1/me/player/volume?volume_percent=' + str(volmeper + 10), headers=headers)
 
 def volumedown():
-    headers = getaheader()
     info = requests.get('https://api.spotify.com/v1/me/player', headers=headers)
     infostr = json.loads(info.content)
     volmeper = int(infostr['device']['volume_percent'])
     voldw = requests.put('https://api.spotify.com/v1/me/player/volume?volume_percent=' + str(volmeper - 10), headers=headers)
 
 def pausemusic():
-    headers = getaheader()
     pause = requests.put('https://api.spotify.com/v1/me/player/pause', headers=headers)
 
 def playmusic():
-    headers = getaheader()
     play = requests.put('https://api.spotify.com/v1/me/player/play', headers=headers)
 
 def previous():
-    headers = getaheader()
     prev = requests.post('https://api.spotify.com/v1/me/player/previous', headers=headers)
 
 def nextsong():
-    headers = getaheader()
     next = requests.post('https://api.spotify.com/v1/me/player/next', headers=headers)
+
