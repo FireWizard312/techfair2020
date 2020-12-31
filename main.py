@@ -299,7 +299,8 @@ def main():
     history = [2]
     history_logit = []
     history_timing = []
-    lastidx = 2
+    lastidx = idx
+    t3 = time.time()
     i_frame = -1
     headers = spotifycontrol.getaheader
     print("Ready!")
@@ -342,27 +343,22 @@ def main():
  #           print(categories[idx])
             if t2 % 3600 == 0:
                 headers = spotifycontrol.getaheader()
-            if idx == lastidx:
-                lastidx = idx
-            elif idx == 14:
-                spotifycontrol.pausemusic()
-                lastidx = idx
-            elif idx == 20:
-                spotifycontrol.playmusic()
-                lastidx = idx
-            elif idx == 10:
-                spotifycontrol.volumedown()
-                lastidx = idx
-            elif idx == 13:
-                spotifycontrol.volumeup()
-                lastidx = idx
-            elif idx == 11:
-                spotifycontrol.previous()
-                lastidx = idx
-            elif idx == 12:
-                spotifycontrol.nextsong()
-                lastidx = idx
-            else:
+            if idx != lastidx:
+                if t2 - t3 > 0.8:
+                    print(5)
+                    t3 = t2
+                    if idx == 14:
+                        spotifycontrol.pausemusic()
+                    elif idx == 20:
+                        spotifycontrol.playmusic()
+                    elif idx == 10:
+                        spotifycontrol.volumedown()
+                    elif idx == 13:
+                        spotifycontrol.volumeup()
+                    elif idx == 11:
+                        spotifycontrol.previous()
+                    elif idx == 12:
+                        spotifycontrol.nextsong()
                 lastidx = idx
             current_time = t2 - t1
 
