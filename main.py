@@ -13,6 +13,7 @@ import torch.onnx
 from PIL import Image, ImageOps
 import tvm.contrib.graph_runtime as graph_runtime
 from mobilenet_v2_tsm import MobileNetV2
+import spotifycontrol
 
 SOFTMAX_THRES = 0
 HISTORY_LOGIT = True
@@ -301,12 +302,12 @@ def main():
     history_timing = []
 
     i_frame = -1
-
+    lastidx = 2
     print("Ready!")
     while True:
         i_frame += 1
         _, img = cap.read()  # (480, 640, 3) 0 ~ 255
-        if i_frame % 3 == 0:  # skip every other frame to obtain a suitable frame rate
+        if i_frame % 2 == 0:  # skip every other frame to obtain a suitable frame rate
             t1 = time.time()
             img_tran = transform([Image.fromarray(img).convert('RGB')])
             input_var = torch.autograd.Variable(img_tran.view(1, 3, img_tran.size(1), img_tran.size(2)))
@@ -338,9 +339,23 @@ def main():
             idx, history = process_output(idx_, history)
 
             t2 = time.time()
-            print(f"{index} {categories[idx]}")
-
-
+#            print(f"{index} {categories[idx]}")
+ #           print(categories[idx])
+            if idx == lastidx:
+                endt = time.time()
+                lastidx = idx
+            elif idx == 14:
+                spotifycontrol.pausemusic()
+            elif idx == 20:
+                spotifycontrol.playmusic()
+            elif idx == 10:
+                spotifycontrol.volumedown()
+            elif idx == 13:
+                spotifycontrol.volumeup()
+            elif idx == 11:
+                spotifycontrol.previous()
+            elif idx == 12:
+                spotifycontrol.nextsong()
             current_time = t2 - t1
 
         img = cv2.resize(img, (640, 480))
