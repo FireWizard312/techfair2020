@@ -339,13 +339,10 @@ def main():
             idx, history = process_output(idx_, history)
             
             t2 = time.time()
-#            print(f"{index} {categories[idx]}")
- #           print(categories[idx])
             if t2 % 3600 == 0:
                 headers = spotifycontrol.getaheader()
             if idx != lastidx:
-                if t2 - t3 > 0.8:
-                    print(5)
+                if t2 - t3 > 1:
                     t3 = t2
                     if idx == 14:
                         spotifycontrol.pausemusic()
@@ -381,6 +378,7 @@ def main():
 
         key = cv2.waitKey(1)
         if key & 0xFF == ord('q') or key == 27:  # exit
+            spotifycontrol.ledoff()
             break
         elif key == ord('F') or key == ord('f'):  # full screen
             print('Changing full screen option!')
@@ -403,7 +401,7 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
-
+    exit
 
 main()
 
