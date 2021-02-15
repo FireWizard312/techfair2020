@@ -5,7 +5,7 @@ import time
 import board
 import neopixel_spi as neopixel
 
-NUM_PIXELS = 16
+NUM_PIXELS = 10
 PIXEL_ORDER = neopixel.RGB
 
 spi = board.SPI()
@@ -35,12 +35,18 @@ def getaheader():
 
 headers = getaheader()
 
+def volper():
+    info = requests.get('https://api.spotify.com/v1/me/player', headers=headers)
+    infostr = json.loads(info.content)
+    volmeper = int(infostr['device']['volume_percent'])
+    return volmeper
 
 def vollight():
-    info = requests.get('https://api.spotify.com/v1/me/player', headers=headers)
-    infostr = json.loads(info.content)
-    volmeper = int(infostr['device']['volume_percent'])
-    if volmeper == 100:
+    volumper = volper()
+    pvolumper = volumper
+    if volumper == pvolumper:
+        volumper = volper()
+    if volumper == 100:
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
         pixels[3] = (255,0,0)
@@ -49,11 +55,7 @@ def vollight():
         pixels[7] = (255,0,0)
         pixels[8] = (0,255,0)
         pixels[9] = (0,0,255)
-        pixels[11] = (255,0,0)
-        pixels[12] = (0,255,0)
-        pixels[13] = (0,0,255)
-        pixels[15] = (255,0,0)
-    if volmeper == 90:
+    if volumper == 88:
         ledoff()
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
@@ -62,11 +64,7 @@ def vollight():
         pixels[5] = (0,0,255)
         pixels[7] = (255,0,0)
         pixels[8] = (0,255,0)
-        pixels[9] = (0,0,255)
-        pixels[11] = (255,0,0)
-        pixels[12] = (0,255,0)
-        pixels[13] = (0,0,255)
-    if volmeper == 80:
+    if volumper == 76:
         ledoff()
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
@@ -74,72 +72,44 @@ def vollight():
         pixels[4] = (0,255,0)
         pixels[5] = (0,0,255)
         pixels[7] = (255,0,0)
-        pixels[8] = (0,255,0)
-        pixels[9] = (0,0,255)
-        pixels[11] = (255,0,0)
-    if volmeper == 70:
+    if volumper == 64:
         ledoff()
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
         pixels[3] = (255,0,0)
         pixels[4] = (0,255,0)
         pixels[5] = (0,0,255)
-        pixels[7] = (255,0,0)
-        pixels[8] = (0,255,0)
-        pixels[9] = (0,0,255)
-    if volmeper == 60:
+    if volumper == 52:
         ledoff()
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
         pixels[3] = (255,0,0)
         pixels[4] = (0,255,0)
-        pixels[5] = (0,0,255)
-        pixels[7] = (255,0,0)
-        pixels[8] = (0,255,0)
-    if volmeper == 50:
+    if volumper == 40:
         ledoff()
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
         pixels[3] = (255,0,0)
-        pixels[4] = (0,255,0)
-        pixels[5] = (0,0,255)
-        pixels[7] = (255,0,0)
-    if volmeper == 40:
+    if volumper == 28:
         ledoff()
         pixels[0] = (0,255,0)
         pixels[1] = (0,0,255)
-        pixels[3] = (255,0,0)
-        pixels[4] = (0,255,0)
-        pixels[5] = (0,0,255)
-    if volmeper == 30:
+    if volumper == 16:
         ledoff()
         pixels[0] = (0,255,0)
-        pixels[1] = (0,0,255)
-        pixels[3] = (255,0,0)
-        pixels[4] = (0,255,0)
-    if volmeper == 20:
+    if volumper == 4:
         ledoff()
-        pixels[0] = (0,255,0)
-        pixels[1] = (0,0,255)
-    if volmeper == 10:
-        ledoff()
-        pixels[0] = (0,255,0)
-    if volmeper == 0:
-        ledoff()
+    print(volumper)
+    pvolumper = volumper
+
 vollight()
 def volumeup():
-    info = requests.get('https://api.spotify.com/v1/me/player', headers=headers)
-    infostr = json.loads(info.content)
-    volmeper = int(infostr['device']['volume_percent'])
-    requests.put('https://api.spotify.com/v1/me/player/volume?volume_percent=' + str(volmeper + 10), headers=headers)
-    vollight()
+    volumper = volper()
+    requests.put('https://api.spotify.com/v1/me/player/volume?volume_percent=' + str(volumper + 12), headers=headers)
 
 def volumedown():
-    info = requests.get('https://api.spotify.com/v1/me/player', headers=headers)
-    infostr = json.loads(info.content)
-    volmeper = int(infostr['device']['volume_percent'])
-    requests.put('https://api.spotify.com/v1/me/player/volume?volume_percent=' + str(volmeper - 10), headers=headers)
-    vollight()
+    volumper = volper()
+    requests.put('https://api.spotify.com/v1/me/player/volume?volume_percent=' + str(volumper - 12), headers=headers)
 
 def pausemusic():
     requests.put('https://api.spotify.com/v1/me/player/pause', headers=headers)
@@ -152,4 +122,5 @@ def previous():
 
 def nextsong():
     requests.post('https://api.spotify.com/v1/me/player/next', headers=headers)
+
 

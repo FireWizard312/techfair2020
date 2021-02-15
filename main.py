@@ -342,20 +342,36 @@ def main():
             if t2 % 3600 == 0:
                 headers = spotifycontrol.getaheader()
             if idx != lastidx:
-                if t2 - t3 > 1:
-                    t3 = t2
-                    if idx == 14:
+                if idx == 14:
+                    if t2 - t3 > 2:
+                        t3 = t2
                         spotifycontrol.pausemusic()
-                    elif idx == 20:
+                        spotifycontrol.vollight()
+                elif idx == 20:
+                    if t2 - t3 > 2:
+                        t3 = t2
                         spotifycontrol.playmusic()
-                    elif idx == 10:
+                        spotifycontrol.vollight()
+                elif idx == 10:
+                    if t2 - t3 > 2:
+                        t3 = t2
                         spotifycontrol.volumedown()
-                    elif idx == 13:
+                        spotifycontrol.vollight()
+                elif idx == 13:
+                    if t2 - t3 > 2:
+                        t3 = t2       
                         spotifycontrol.volumeup()
-                    elif idx == 11:
+                        spotifycontrol.vollight()
+                elif idx == 11:
+                    if t2 - t3 > 2:
+                        t3 = t2
                         spotifycontrol.previous()
-                    elif idx == 12:
+                        spotifycontrol.vollight()
+                elif idx == 12:
+                    if t2 - t3 > 2:
+                        t3 = t2
                         spotifycontrol.nextsong()
+                        spotifycontrol.vollight()
                 lastidx = idx
             current_time = t2 - t1
 
