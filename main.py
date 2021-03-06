@@ -13,7 +13,7 @@ import torch.onnx
 from PIL import Image, ImageOps
 import tvm.contrib.graph_runtime as graph_runtime
 from mobilenet_v2_tsm import MobileNetV2
-import spotifycontrol
+import controlfunc
 
 SOFTMAX_THRES = 0
 HISTORY_LOGIT = True
@@ -227,7 +227,7 @@ categories = [
     "Zooming Out With Full Hand",  # 25
     "Zooming Out With Two Fingers"  # 26
 ]
-
+#delete gestures maybe
 
 n_still_frame = 0
 
@@ -257,7 +257,10 @@ def process_output(idx_, history):
     history = history[-max_hist_len:]
 
     return history[-1], history
-
+#What is all of this
+#change everything
+#change numbers to constants for gesture
+#change color to blue
 WINDOW_NAME = 'Video Gesture Recognition'
 def main():
     print("Open camera...")
@@ -302,7 +305,7 @@ def main():
     lastidx = idx
     t3 = time.time()
     i_frame = -1
-    headers = spotifycontrol.getaheader
+    headers = controlfunc.getaheader
     print("Ready!")
     while True:
         i_frame += 1
@@ -340,38 +343,38 @@ def main():
             
             t2 = time.time()
             if t2 % 3600 == 0:
-                headers = spotifycontrol.getaheader()
+                headers = controlfunc.getaheader()
             if idx != lastidx:
                 if idx == 14:
                     if t2 - t3 > 2:
                         t3 = t2
-                        spotifycontrol.pausemusic()
-                        spotifycontrol.vollight()
+                        controlfunc.pausemusic()
+                        controlfunc.vollight()
                 elif idx == 20:
                     if t2 - t3 > 2:
                         t3 = t2
-                        spotifycontrol.playmusic()
-                        spotifycontrol.vollight()
+                        controlfunc.playmusic()
+                        controlfunc.vollight()
                 elif idx == 10:
                     if t2 - t3 > 2:
                         t3 = t2
-                        spotifycontrol.volumedown()
-                        spotifycontrol.vollight()
+                        controlfunc.volumedown()
+                        controlfunc.vollight()
                 elif idx == 13:
                     if t2 - t3 > 2:
                         t3 = t2       
-                        spotifycontrol.volumeup()
-                        spotifycontrol.vollight()
+                        controlfunc.volumeup()
+                        controlfunc.vollight()
                 elif idx == 11:
                     if t2 - t3 > 2:
                         t3 = t2
-                        spotifycontrol.previous()
-                        spotifycontrol.vollight()
+                        controlfunc.previous()
+                        controlfunc.vollight()
                 elif idx == 12:
                     if t2 - t3 > 2:
                         t3 = t2
-                        spotifycontrol.nextsong()
-                        spotifycontrol.vollight()
+                        controlfunc.nextsong()
+                        controlfunc.vollight()
                 lastidx = idx
             current_time = t2 - t1
 
@@ -394,7 +397,7 @@ def main():
 
         key = cv2.waitKey(1)
         if key & 0xFF == ord('q') or key == 27:  # exit
-            spotifycontrol.ledoff()
+            controlfunc.ledoff()
             break
         elif key == ord('F') or key == ord('f'):  # full screen
             print('Changing full screen option!')
