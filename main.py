@@ -18,7 +18,7 @@ import controlfunc
 SOFTMAX_THRES = 0
 HISTORY_LOGIT = True
 REFINE_OUTPUT = True
-
+#Prepares torchvision
 def torch2tvm_module(torch_module: torch.nn.Module, torch_inputs: Tuple[torch.Tensor, ...], target):
     torch_module.eval()
     input_names = []
@@ -73,7 +73,7 @@ def torch2executor(torch_module: torch.nn.Module, torch_inputs: Tuple[torch.Tens
 
     return executor, ctx
 
-
+#
 def get_executor(use_gpu=True):
     torch_module = MobileNetV2(n_class=27)
     if not os.path.exists("mobilenetv2_jester_online.pth.tar"):  # checkpoint not downloaded
@@ -99,7 +99,7 @@ def get_executor(use_gpu=True):
         target = 'llvm -mcpu=cortex-a72 -target=armv7l-linux-gnueabihf'
     return torch2executor(torch_module, torch_inputs, target)
 
-
+#Changes the width and height of the camera popup
 def transform(frame: np.ndarray):
     # 480, 640, 3, 0 ~ 255
     frame = cv2.resize(frame, (224, 224))  # (224, 224, 3) 0 ~ 255
@@ -117,7 +117,7 @@ class GroupResize(object):
     size: size of the smaller edge
     interpolation: Default: PIL.Image.BILINEAR
     """
-
+#Scale the Pillow image from the webcam down
     def __init__(self, size, interpolation=Image.BILINEAR):
         self.worker = torchvision.transforms.Resize(size, interpolation)
 
@@ -184,7 +184,7 @@ class GroupNormalize(object):
 
         return tensor
 
-
+#Transforms the images
 def get_transform():
     cropping = torchvision.transforms.Compose([
         GroupResize(256),
@@ -198,6 +198,7 @@ def get_transform():
     ])
     return transform
 
+#list of gestures
 categories = [
     "Doing other things",  # 0
     "Drumming Fingers",  # 1
@@ -227,7 +228,6 @@ categories = [
     "Zooming Out With Full Hand",  # 25
     "Zooming Out With Two Fingers"  # 26
 ]
-#delete gestures maybe
 
 n_still_frame = 0
 
@@ -257,10 +257,7 @@ def process_output(idx_, history):
     history = history[-max_hist_len:]
 
     return history[-1], history
-#What is all of this
-#change everything
-#change numbers to constants for gesture
-#change color to blue
+
 WINDOW_NAME = 'Video Gesture Recognition'
 def main():
     print("Open camera...")
@@ -298,12 +295,12 @@ def main():
         tvm.nd.empty((1, 20, 7, 7), ctx=ctx),
         tvm.nd.empty((1, 20, 7, 7), ctx=ctx)
     )
-    idx = 0
+    gesture = 0
     history = [2]
     history_logit = []
     history_timing = []
-    lastidx = idx
-    t3 = time.time()
+    lastgesture = gesture
+    lastcmd = time.time()
     i_frame = -1
     headers = controlfunc.getaheader
     print("Ready!")
@@ -329,7 +326,7 @@ def main():
                 if max(softmax) > SOFTMAX_THRES:
                     idx_ = np.argmax(feat.asnumpy(), axis=1)[0]
                 else:
-                    idx_ = idx
+                    idx_ = gesture
             else:
                 idx_ = np.argmax(feat.asnumpy(), axis=1)[0]
 
@@ -339,43 +336,43 @@ def main():
                 avg_logit = sum(history_logit)
                 idx_ = np.argmax(avg_logit, axis=1)[0]
 
-            idx, history = process_output(idx_, history)
+            gesture, history = process_output(idx_, history)
             
             t2 = time.time()
             if t2 % 3600 == 0:
                 headers = controlfunc.getaheader()
-            if idx != lastidx:
-                if idx == 14:
+            if gesture != lastgesture:
+                if gesture == 14:
                     if t2 - t3 > 2:
-                        t3 = t2
+                        lastcmd = t2
                         controlfunc.pausemusic()
                         controlfunc.vollight()
-                elif idx == 20:
-                    if t2 - t3 > 2:
-                        t3 = t2
+                elif gesture == 20:
+                    if t2 - lastcmd > 2:
+                        lastcmd = t2
                         controlfunc.playmusic()
                         controlfunc.vollight()
-                elif idx == 10:
-                    if t2 - t3 > 2:
-                        t3 = t2
+                elif gesture == 10:
+                    if t2 - lastcmd > 2:
+                        lastcmd = t2
                         controlfunc.volumedown()
                         controlfunc.vollight()
-                elif idx == 13:
-                    if t2 - t3 > 2:
-                        t3 = t2       
+                elif gesture == 13:
+                    if t2 - lastcmd > 2:
+                        lastcmd = t2       
                         controlfunc.volumeup()
                         controlfunc.vollight()
                 elif idx == 11:
-                    if t2 - t3 > 2:
-                        t3 = t2
+                    if t2 - lastcmd > 2:
+                        lastcmd = t2
                         controlfunc.previous()
                         controlfunc.vollight()
-                elif idx == 12:
-                    if t2 - t3 > 2:
-                        t3 = t2
+                elif gesture == 12:
+                    if t2 - lastcmd > 2:
+                        lastcmd = t2
                         controlfunc.nextsong()
                         controlfunc.vollight()
-                lastidx = idx
+                lastgesture = gesture
             current_time = t2 - t1
 
         img = cv2.resize(img, (640, 480))
